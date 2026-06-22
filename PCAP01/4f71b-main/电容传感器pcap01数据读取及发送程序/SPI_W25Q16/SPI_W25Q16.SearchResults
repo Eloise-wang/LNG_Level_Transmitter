@@ -1,0 +1,4 @@
+---- TIM_ClearITPendingBit Matches (3 in 3 files) ----
+Stm32f10x_it.c (user\main):		TIM_ClearITPendingBit(TIM4, TIM_FLAG_Update);
+Stm32f10x_tim.c (libraries\stm32f10x_stdperiph_driver_v3.5\src):void TIM_ClearITPendingBit(TIM_TypeDef* TIMx, uint16_t TIM_IT)
+Stm32f10x_tim.h (libraries\stm32f10x_stdperiph_driver_v3.5\inc):void TIM_ClearITPendingBit(TIM_TypeDef* TIMx, uint16_t TIM_IT);
