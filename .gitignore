@@ -1,55 +1,104 @@
-# Prerequisites
-*.d
+# ==============================================================================
+# 【核心：你的工程专属忽略规则】（匹配你的 ls 输出路径）
+# ==============================================================================
+# 1. FreeRTOS TAD 日志文件夹（整文件夹忽略，包含所有.log）
+Autosar_mode_code/FreeRTOS_TAD_logs/
 
-# Object files
-*.o
-*.ko
-*.obj
+# 2. S32DS 远程系统临时文件（IDE 自动生成，无意义）
+Autosar_mode_code/RemoteSystemsTempFiles/
+
+# 3. Autosar Bootloader 工程下的调试配置（烧录/串口路径，团队冲突源）
+Autosar_mode_code/Autosar_Bootloader/Project Settings/
+
+Autosar_mode_code/Autosar_Bootloader/.cproject
+Autosar_mode_code/Autosar_Bootloader/.project
+Autosar_mode_code/Autosar_Bootloader/*.launch
+# ==============================================================================
+# 【通用：S32DS 嵌入式工程必忽略】
+# ==============================================================================
+# -------------------------- 编译产物 --------------------------
+# 编译输出文件夹（Debug/Release 模式）
+
+Debug_FLASH/
+Release/
+# 可执行文件/镜像文件
 *.elf
-
-# Linker output
-*.ilk
-*.map
-*.exp
-
-# Precompiled Headers
-*.gch
-*.pch
-
-# Libraries
-*.lib
-*.a
-*.la
-*.lo
-
-# Shared objects (inc. Windows DLLs)
-*.dll
-*.so
-*.so.*
-*.dylib
-
-# Executables
-*.exe
-*.out
-*.app
-*.i*86
-*.x86_64
 *.hex
+*.srec
+*.bin
+# 编译中间文件
+*.o          # 目标文件
+*.d          # 依赖文件
+*.lst        # 列表文件
+*.map        # 链接映射文件
+*.asm        # 汇编文件（自动生成）
+# 预编译头文件
+*.pch
+*.gch
 
-# Debug files
-*.dSYM/
-*.su
-*.idb
-*.pdb
+# -------------------------- IDE 配置/临时文件 --------------------------
+# S32DS/Eclipse 核心配置（如需团队共享工程，可注释以下2行）
+# .cproject
+# .project
+# S32DS 包管理临时文件
+.s32ds_packages_support/
+# Eclipse 元数据（本地工作区配置）
+.metadata/
+# 备份文件（IDE 自动生成）
+*.bak
+*.backup
+*~
+# 临时文件
+*.tmp
+*.temp
+# 索引文件
+*.idx
+# 锁文件
+*.lock
 
-# Kernel Module Compile Results
-*.mod*
-*.cmd
-.tmp_versions/
-modules.order
-Module.symvers
-Mkfile.old
-dkms.conf
+# -------------------------- 调试/日志文件 --------------------------
+# 串口/调试日志
+*.log
+*.log.*
+# Core Dump 文件（程序崩溃生成）
+core
+core.*
+# GDB 调试配置
+.gdbinit
+*.gdb
 
-# debug information files
-*.dwo
+# ==============================================================================
+# 【可选：FreeRTOS/Autosar 专属忽略】
+# ==============================================================================
+# FreeRTOS 配置自动生成文件（如需共享配置，可注释）
+FreeRTOSConfig_auto.h
+# Autosar ARXML 临时生成文件
+*.arxml.bak
+*.arxml.tmp
+# Autosar 代码生成临时文件夹
+CodeGen/
+Generated_Code/
+# MCAL 配置临时文件
+MCAL_Config/Backup/
+MCAL_Config/Temp/
+
+# ==============================================================================
+# 【通用：操作系统/编辑器临时文件】
+# ==============================================================================
+# Windows 系统文件
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+# macOS 系统文件
+.DS_Store
+.AppleDouble
+.LSOverride
+# Linux 隐藏文件
+.*.swp
+.swp
+# VS Code 配置（如需共享，可注释）
+.vscode/
+# 压缩包
+*.zip
+*.rar
+*.7z
