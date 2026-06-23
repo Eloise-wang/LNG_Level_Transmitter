@@ -23,6 +23,7 @@
 #include "peripherals_can_pal_1.h"
 #include "peripherals_edma_config_1.h"
 #include "peripherals_wdog_config_1.h"
+#include "peripherals_lpspi_0.h"
 
 
 #endif /* SDK_PROJECT_CONFIG_H_ */
