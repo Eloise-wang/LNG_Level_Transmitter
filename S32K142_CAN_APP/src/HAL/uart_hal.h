@@ -28,4 +28,7 @@ void UART_HAL_SendChar(char c);
 /* 发送字符串 (阻塞) */
 void UART_HAL_SendString(const char *str);
 
+/* 发送 32 位 Hex (阻塞) */
+void UART_HAL_SendHex32(uint32_t value);
+
 #endif /* HAL_UART_HAL_H_ */

@@ -31,3 +31,14 @@ void UART_HAL_SendString(const char *str)
         str++;
     }
 }
+
+void UART_HAL_SendHex32(uint32_t value)
+{
+    static const char hexChars[] = "0123456789ABCDEF";
+
+    UART_HAL_SendString("0x");
+    for (int32_t i = 28; i >= 0; i -= 4)
+    {
+        UART_HAL_SendChar(hexChars[(value >> (uint32_t)i) & 0x0FU]);
+    }
+}

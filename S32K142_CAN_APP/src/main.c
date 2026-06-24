@@ -13,9 +13,11 @@
 #include "can_hal.h"
 #include "uart_hal.h"
 #include "watchdog_hal.h"
+#include "pcap01.h"
 #include "sdk_project_config.h"
 #include "device_registers.h"
 #include "wdog_driver.h"
+#include "osif.h"
 #include "includes.h"
 
 volatile int exit_code = 0;
@@ -41,8 +43,6 @@ int main(void)
 
     PINS_DRV_Init(NUM_OF_CONFIGURED_PINS0, g_pin_mux_InitConfigArr0);
 
-    WATCHDOG_HAL_Init();
-
     /* 阶段3: CAN初始化（内部自动注册UDS Bootloader触发回调） */
     *(volatile uint8 *)0x20002FF2u = 0xA3u;
     CAN_HAL_Init();
@@ -52,11 +52,35 @@ int main(void)
 
     /* UART初始化并打印欢迎信息 */
     UART_HAL_Init();
+    UART_HAL_SendString("\r\nRCM_SRS=");
+    UART_HAL_SendHex32(WATCHDOG_HAL_GetResetSrc());
+    UART_HAL_SendString("\r\n");
     UART_HAL_SendString("Welcome to the YWJ Project2\r\n");
+
+    /* PCAP01初始化（耗时较长，在看门狗启动前完成） */
+    PCAP01_Init();
+    UART_HAL_SendString("PCAP01 Init done.\r\n");
+
+    /* 所有初始化完成后再启动看门狗，超时 47ms */
+    WATCHDOG_HAL_Init();
 
     for (;;)
     {
-        WATCHDOG_HAL_Fed();
+        uint32_t status = PCAP01_ReadData(8U);
+        uint32_t ref    = PCAP01_ReadData(1U);
+
+        UART_HAL_SendString("S:");
+        UART_HAL_SendHex32(status);
+        UART_HAL_SendString(" R:");
+        UART_HAL_SendHex32(ref);
+        UART_HAL_SendString("\r\n");
+
+        /* 分片延时 500ms，每 30ms 喂一次狗（超时 47ms，30ms 安全） */
+        for (uint32_t i = 0U; i < 500U; i += 30U)
+        {
+            WATCHDOG_HAL_Fed();
+            OSIF_TimeDelay(30U);
+        }
 
         if (exit_code != 0)
         {

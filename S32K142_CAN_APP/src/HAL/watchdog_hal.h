@@ -97,6 +97,9 @@ extern void WATCHDOG_HAL_SystemRest(void);
  */
 extern void WATCHDOG_HAL_Deinit(void);
 
+/* 获取复位源寄存器 RCM_SRS 的值 */
+extern uint32_t WATCHDOG_HAL_GetResetSrc(void);
+
 /*! @}*/
 
 #if defined (__cplusplus)

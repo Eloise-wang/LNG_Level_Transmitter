@@ -464,12 +464,12 @@
                               <setting name="readOnly" value="true"/>
                               <setting name="bitsPerSec" value="1000000"/>
                               <setting name="whichPcs" value="LPSPI_PCS2"/>
-                              <setting name="pcsPolarity" value="LPSPI_ACTIVE_HIGH"/>
+                              <setting name="pcsPolarity" value="LPSPI_ACTIVE_LOW"/>
                               <setting name="isPcsContinuous" value="true"/>
                               <setting name="bitcount" value="8"/>
                               <setting name="lpspiSrcClk" value="8000000"/>
                               <setting name="clkPhase" value="LPSPI_CLOCK_PHASE_2ND_EDGE"/>
-                              <setting name="clkPolarity" value="LPSPI_SCK_ACTIVE_LOW"/>
+                              <setting name="clkPolarity" value="LPSPI_SCK_ACTIVE_HIGH"/>
                               <setting name="lsbFirst" value="false"/>
                               <setting name="transferType" value="LPSPI_USING_INTERRUPTS"/>
                               <setting name="rxDMAChannel" value="0"/>

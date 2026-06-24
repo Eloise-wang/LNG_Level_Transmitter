@@ -11,6 +11,16 @@
  */
 #include "watchdog_hal.h"
 
+/*******************************************************************************
+ * Local Defines
+ ******************************************************************************/
+
+/* RCM System Reset Status Register 标志位 */
+#define RCM_SRS_WDOG_BIT    (1U << 5U)   /* 看门狗复位 */
+#define RCM_SRS_PIN_BIT     (1U << 6U)   /* 外部引脚复位 */
+#define RCM_SRS_POR_BIT     (1U << 7U)   /* 上电复位 */
+#define RCM_SRS_LOCKUP_BIT  (1U << 9U)   /* 内核锁定复位 */
+#define RCM_SRS_SW_BIT      (1U << 10U)  /* 软件复位 */
 
 /*******************************************************************************
  * User Include
@@ -80,6 +90,11 @@ void WATCHDOG_HAL_Deinit(void)
 {
 
 
+}
+
+uint32_t WATCHDOG_HAL_GetResetSrc(void)
+{
+    return RCM->SRS;
 }
 /******************************************************************************
  * EOF

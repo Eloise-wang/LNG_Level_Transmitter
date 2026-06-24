@@ -45,12 +45,12 @@ instance:
         - readOnly: 'true'
         - bitsPerSec: '1000000'
         - whichPcs: 'LPSPI_PCS2'
-        - pcsPolarity: 'LPSPI_ACTIVE_HIGH'
+        - pcsPolarity: 'LPSPI_ACTIVE_LOW'
         - isPcsContinuous: 'true'
         - bitcount: '8'
         - lpspiSrcClk: '8000000'
         - clkPhase: 'LPSPI_CLOCK_PHASE_2ND_EDGE'
-        - clkPolarity: 'LPSPI_SCK_ACTIVE_LOW'
+        - clkPolarity: 'LPSPI_SCK_ACTIVE_HIGH'
         - lsbFirst: 'false'
         - transferType: 'LPSPI_USING_INTERRUPTS'
         - rxDMAChannel: '0'
@@ -82,12 +82,12 @@ lpspi_state_t lpspi_0State;
 const lpspi_master_config_t lpspi_0_MasterConfig0 = {
   .bitsPerSec = 1000000UL,
   .whichPcs = LPSPI_PCS2,
-  .pcsPolarity = LPSPI_ACTIVE_HIGH,
+  .pcsPolarity = LPSPI_ACTIVE_LOW,
   .isPcsContinuous = true,
   .bitcount = 8U,
   .lpspiSrcClk = 8000000UL,
   .clkPhase = LPSPI_CLOCK_PHASE_2ND_EDGE,
-  .clkPolarity = LPSPI_SCK_ACTIVE_LOW,
+  .clkPolarity = LPSPI_SCK_ACTIVE_HIGH,
   .lsbFirst = false,
   .transferType = LPSPI_USING_INTERRUPTS,
   .rxDMAChannel = 0U,
