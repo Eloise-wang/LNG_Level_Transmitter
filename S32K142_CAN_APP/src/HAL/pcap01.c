@@ -260,8 +260,8 @@ uint32_t PCAP01_RawToCapacitance_pF(uint32_t rawValue)
 {
     uint32_t raw24 = (uint32_t)(rawValue & PCAP01_RESULT_MASK);
 
-    uint64_t numerator = (uint64_t)raw24 * (uint64_t)PCAP01_CREF_PF;
-    
+    uint64_t numerator = (uint64_t)raw24 * (uint64_t)PCAP01_CREF_PF * 1000ULL;
+
     numerator += (1ULL << (PCAP01_Q21_SHIFT - 1U));
 
     return (uint32_t)(numerator >> PCAP01_Q21_SHIFT);

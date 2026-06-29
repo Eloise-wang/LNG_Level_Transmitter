@@ -66,50 +66,75 @@ int main(void)
 
     for (;;)
     {
-        uint32_t rawIdx[8];
+        uint32_t status;
         uint32_t ratioRaw;
         uint32_t ratio_x10000;
-        uint32_t cap_pF;
-        uint32_t index;
+        uint32_t cap_pF_x1000;
+        uint32_t cap_pF_int;
+        uint32_t cap_pF_frac;
 
-        for (index = 0U; index < 8U; index++)
+        uint32_t ready = 0U;
+        for (uint32_t i = 0U; i < 200U; i++)
         {
-            rawIdx[index] = PCAP01_ReadData(index + 1U);
+            status = PCAP01_ReadData(8U);
+            if ((status & 0x00100000UL) != 0U)
+            {
+                ready = 1U;
+                break;
+            }
+            WATCHDOG_HAL_Fed();
+            OSIF_TimeDelay(1U);
         }
 
-        ratioRaw = rawIdx[0];
-        cap_pF = PCAP01_RawToCapacitance_pF(ratioRaw);
+        if (ready == 0U)
+        {
+            UART_HAL_SendString("S:");
+            UART_HAL_SendHex32(status);
+            UART_HAL_SendString(" NRDY\r\n");
+            continue;
+        }
+
+        status = PCAP01_ReadData(8U);
+
+        ratioRaw = PCAP01_ReadData(1U);
+        for (uint32_t i = 0U; i < 5U; i++)
+        {
+            uint32_t raw2 = PCAP01_ReadData(1U);
+            if (raw2 == ratioRaw)
+            {
+                break;
+            }
+            ratioRaw = raw2;
+            WATCHDOG_HAL_Fed();
+            OSIF_TimeDelay(1U);
+        }
+
+        cap_pF_x1000 = PCAP01_RawToCapacitance_pF(ratioRaw);
+        cap_pF_int = cap_pF_x1000 / 1000U;
+        cap_pF_frac = cap_pF_x1000 % 1000U;
+
         ratio_x10000 = (uint32_t)(((uint64_t)ratioRaw * 10000ULL + (1ULL << 20U)) >> 21U);
 
         WATCHDOG_HAL_Fed();
 
-        UART_HAL_SendString("I1:");
-        UART_HAL_SendHex32(rawIdx[0]);
-        UART_HAL_SendString(" I2:");
-        UART_HAL_SendHex32(rawIdx[1]);
-        UART_HAL_SendString(" I3:");
-        UART_HAL_SendHex32(rawIdx[2]);
-        UART_HAL_SendString(" I4:");
-        UART_HAL_SendHex32(rawIdx[3]);
-        UART_HAL_SendString(" I5:");
-        UART_HAL_SendHex32(rawIdx[4]);
-        UART_HAL_SendString(" I6:");
-        UART_HAL_SendHex32(rawIdx[5]);
-        UART_HAL_SendString(" I7:");
-        UART_HAL_SendHex32(rawIdx[6]);
-        UART_HAL_SendString(" I8:");
-        UART_HAL_SendHex32(rawIdx[7]);
+        UART_HAL_SendString("S:");
+        UART_HAL_SendHex32(status);
+        UART_HAL_SendString(" R:");
+        UART_HAL_SendHex32(ratioRaw);
         UART_HAL_SendString(" Kx10000:");
         UART_HAL_SendDec32(ratio_x10000);
         UART_HAL_SendString(" C:");
-        UART_HAL_SendDec32(cap_pF);
+        UART_HAL_SendDec32(cap_pF_int);
+        UART_HAL_SendString(".");
+        if (cap_pF_frac < 100U) { UART_HAL_SendString("0"); }
+        if (cap_pF_frac < 10U)  { UART_HAL_SendString("0"); }
+        UART_HAL_SendDec32(cap_pF_frac);
         UART_HAL_SendString("pF\r\n");
 
-        /* 分片延时 500ms，每 30ms 喂一次狗 */
-        for (uint32_t i = 0U; i < 500U; i += 30U)
+        for (uint32_t i = 0U; i < 50U; i += 10U)
         {
             WATCHDOG_HAL_Fed();
-            OSIF_TimeDelay(30U);
+            OSIF_TimeDelay(10U);
         }
 
         if (exit_code != 0)
