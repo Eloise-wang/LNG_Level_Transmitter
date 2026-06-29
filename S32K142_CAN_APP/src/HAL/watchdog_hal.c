@@ -22,6 +22,8 @@
 #define RCM_SRS_LOCKUP_BIT  (1U << 9U)   /* 内核锁定复位 */
 #define RCM_SRS_SW_BIT      (1U << 10U)  /* 软件复位 */
 
+#define WATCHDOG_TIMEOUT_TICKS  60000U
+
 /*******************************************************************************
  * User Include
  ******************************************************************************/
@@ -50,6 +52,10 @@ void WATCHDOG_HAL_Init(void)
 		(void)WDOG_DRV_Deinit(WDOG_CONFIG_1_INST);
 		(void)WDOG_DRV_Init(WDOG_CONFIG_1_INST, &watchdog1_Config0);
 	}
+
+    (void)WDOG_DRV_SetInt(WDOG_CONFIG_1_INST, false);
+    (void)WDOG_DRV_SetTimeout(WDOG_CONFIG_1_INST, (uint16_t)WATCHDOG_TIMEOUT_TICKS);
+    WDOG_DRV_Trigger(WDOG_CONFIG_1_INST);
 }
 
 /*FUNCTION**********************************************************************

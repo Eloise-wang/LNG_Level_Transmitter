@@ -36,6 +36,11 @@
 #define PCAP01_CMD_START_CYCLE  0x8CU
 #define PCAP01_CMD_RESET_PTR    0x8AU
 
+#define PCAP01_RESULT_MASK      0x00FFFFFFUL
+#define PCAP01_Q21_SHIFT        21U
+#define PCAP01_CREF_PF          390UL
+
+
 /*******************************************************************************
  * Local Types
  ******************************************************************************/
@@ -249,4 +254,15 @@ uint32_t PCAP01_ReadData(uint32_t index)
 
     /* rxBuf[0] = 命令发送期间的无效数据, rxBuf[1:3] = 24位结果 (MSB 优先) */
     return ((uint32_t)rxBuf[1] << 16U) | ((uint32_t)rxBuf[2] << 8U) | (uint32_t)rxBuf[3];
+}
+
+uint32_t PCAP01_RawToCapacitance_pF(uint32_t rawValue)
+{
+    uint32_t raw24 = (uint32_t)(rawValue & PCAP01_RESULT_MASK);
+
+    uint64_t numerator = (uint64_t)raw24 * (uint64_t)PCAP01_CREF_PF;
+    
+    numerator += (1ULL << (PCAP01_Q21_SHIFT - 1U));
+
+    return (uint32_t)(numerator >> PCAP01_Q21_SHIFT);
 }

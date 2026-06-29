@@ -42,3 +42,28 @@ void UART_HAL_SendHex32(uint32_t value)
         UART_HAL_SendChar(hexChars[(value >> (uint32_t)i) & 0x0FU]);
     }
 }
+
+void UART_HAL_SendDec32(uint32_t value)
+{
+    char buf[12]; /* 最大 4294967295 = 10 位 + '\0' */
+    int32_t pos = sizeof(buf) - 1U;
+
+    buf[pos] = '\0';
+
+    if (value == 0U)
+    {
+        UART_HAL_SendChar('0');
+        return;
+    }
+
+    while (value != 0U)
+    {
+        buf[--pos] = (char)('0' + (value % 10U));
+        value /= 10U;
+    }
+
+    while (buf[pos] != '\0')
+    {
+        UART_HAL_SendChar(buf[pos++]);
+    }
+}

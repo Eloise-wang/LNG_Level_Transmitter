@@ -61,21 +61,51 @@ int main(void)
     PCAP01_Init();
     UART_HAL_SendString("PCAP01 Init done.\r\n");
 
-    /* 所有初始化完成后再启动看门狗，超时 47ms */
+    /* 所有初始化完成后再启动看门狗，超时约 0.47s */
     WATCHDOG_HAL_Init();
 
     for (;;)
     {
-        uint32_t status = PCAP01_ReadData(8U);
-        uint32_t ref    = PCAP01_ReadData(1U);
+        uint32_t rawIdx[8];
+        uint32_t ratioRaw;
+        uint32_t ratio_x10000;
+        uint32_t cap_pF;
+        uint32_t index;
 
-        UART_HAL_SendString("S:");
-        UART_HAL_SendHex32(status);
-        UART_HAL_SendString(" R:");
-        UART_HAL_SendHex32(ref);
-        UART_HAL_SendString("\r\n");
+        for (index = 0U; index < 8U; index++)
+        {
+            rawIdx[index] = PCAP01_ReadData(index + 1U);
+        }
 
-        /* 分片延时 500ms，每 30ms 喂一次狗（超时 47ms，30ms 安全） */
+        ratioRaw = rawIdx[0];
+        cap_pF = PCAP01_RawToCapacitance_pF(ratioRaw);
+        ratio_x10000 = (uint32_t)(((uint64_t)ratioRaw * 10000ULL + (1ULL << 20U)) >> 21U);
+
+        WATCHDOG_HAL_Fed();
+
+        UART_HAL_SendString("I1:");
+        UART_HAL_SendHex32(rawIdx[0]);
+        UART_HAL_SendString(" I2:");
+        UART_HAL_SendHex32(rawIdx[1]);
+        UART_HAL_SendString(" I3:");
+        UART_HAL_SendHex32(rawIdx[2]);
+        UART_HAL_SendString(" I4:");
+        UART_HAL_SendHex32(rawIdx[3]);
+        UART_HAL_SendString(" I5:");
+        UART_HAL_SendHex32(rawIdx[4]);
+        UART_HAL_SendString(" I6:");
+        UART_HAL_SendHex32(rawIdx[5]);
+        UART_HAL_SendString(" I7:");
+        UART_HAL_SendHex32(rawIdx[6]);
+        UART_HAL_SendString(" I8:");
+        UART_HAL_SendHex32(rawIdx[7]);
+        UART_HAL_SendString(" Kx10000:");
+        UART_HAL_SendDec32(ratio_x10000);
+        UART_HAL_SendString(" C:");
+        UART_HAL_SendDec32(cap_pF);
+        UART_HAL_SendString("pF\r\n");
+
+        /* 分片延时 500ms，每 30ms 喂一次狗 */
         for (uint32_t i = 0U; i < 500U; i += 30U)
         {
             WATCHDOG_HAL_Fed();
