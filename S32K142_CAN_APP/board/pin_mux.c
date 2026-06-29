@@ -45,12 +45,29 @@ BOARD_InitPins:
   - {pin_num: '59', peripheral: LPSPI0, signal: sin, pin_signal: PTE1, direction: INPUT}
   - {pin_num: '54', peripheral: LPSPI0, signal: sout, pin_signal: PTE2, direction: OUTPUT}
   - {pin_num: '53', peripheral: LPSPI0, signal: 'pcs, 2', pin_signal: PTE6, direction: INPUT}
+  - {pin_num: '49', peripheral: PORTA, signal: 'port, 1', pin_signal: PTA1, direction: INPUT, ISF: state_1, IRQC: state_1010, LK: state_0, PE: state_1, PS: state_1,
+    DFE: state_0, initValue: state_0}
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS ***********
  */
 /* clang-format on */
 
 /* Generate array of configured pin structures */
 pin_settings_config_t g_pin_mux_InitConfigArr0[NUM_OF_CONFIGURED_PINS0] = {
+    {
+        .base            = PORTA,
+        .pinPortIdx      = 1U,
+        .pullConfig      = PORT_INTERNAL_PULL_UP_ENABLED,
+        .driveSelect     = PORT_LOW_DRIVE_STRENGTH,
+        .passiveFilter   = false,
+        .mux             = PORT_MUX_AS_GPIO,
+        .pinLock         = false,
+        .intConfig       = PORT_INT_FALLING_EDGE,
+        .clearIntFlag    = true,
+        .gpioBase        = PTA,
+        .direction       = GPIO_INPUT_DIRECTION,
+        .digitalFilter   = false,
+        .initValue       = 0U,
+    },
     {
         .base            = PORTB,
         .pinPortIdx      = 2U,
