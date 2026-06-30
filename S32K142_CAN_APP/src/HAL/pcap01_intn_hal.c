@@ -1,16 +1,17 @@
 /*
- * app_pcap01_INTN.c
+ * pcap01_intn_hal.c
  *
- *  Created on: 2026年6月29日
+ *  Created on: 2026年6月30日
  *      Author: Eloise
  *     Project: S32K142_CAN_APP
- *       Brief: 【 】
+ *       Brief: PCAP01 INTN 引脚中断 HAL 层实现
  *       Note : 1. 适配芯片：S32K142_64
  *              2. 编码格式：UTF-8
  *              3. 编译环境：S32DS 3.4 + GCC 7.2.1
+ *              4. PORTA IRQ 共享入口，通过 PTA1 标志识别 INTN 事件
  */
 
-#include "app_pcap01_INTN.h"
+#include "pcap01_intn_hal.h"
 
 #include "device_registers.h"
 #include "interrupt_manager.h"
@@ -27,7 +28,7 @@ void PORTA_IRQHandler(void)
     }
 }
 
-void APP_PCAP01_INTN_Init(void)
+void PCAP01_INTN_HAL_Init(void)
 {
     PINS_DRV_SetPinIntSel(PORTA, 1U, PORT_INT_EITHER_EDGE);
     PINS_DRV_ClearPinIntFlagCmd(PORTA, 1U);
@@ -35,12 +36,12 @@ void APP_PCAP01_INTN_Init(void)
     s_pcap01IntnEvent = 0U;
 }
 
-void APP_PCAP01_INTN_ClearEvent(void)
+void PCAP01_INTN_HAL_ClearEvent(void)
 {
     s_pcap01IntnEvent = 0U;
 }
 
-bool APP_PCAP01_INTN_TakeEvent(void)
+bool PCAP01_INTN_HAL_TakeEvent(void)
 {
     if (s_pcap01IntnEvent != 0U)
     {
@@ -50,4 +51,3 @@ bool APP_PCAP01_INTN_TakeEvent(void)
 
     return false;
 }
-
