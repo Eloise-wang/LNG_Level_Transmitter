@@ -12,6 +12,7 @@
 
 #include "app_startup.h"
 
+#include "app_TankParameterConfig.h"
 #include "can_hal.h"
 #include "test_pcap01.h"
 #include "uart_hal.h"
@@ -50,5 +51,7 @@ void APP_Startup_Run(void)
     WATCHDOG_HAL_Init();
 
     TEST_PCAP01_Init();
+
+    APP_TankParam_Init();
 }
 

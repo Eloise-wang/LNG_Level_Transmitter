@@ -24,6 +24,7 @@ volatile int exit_code = 0;
 */
 int main(void)
 {
+	//初始化HAL层
     APP_Startup_Run();
 
     for (;;)

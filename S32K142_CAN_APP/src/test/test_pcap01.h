@@ -15,10 +15,8 @@
 
 #include <stdint.h>
 
-//初始化
 void TEST_PCAP01_Init(void);
 
-//
 void TEST_PCAP01_PollAndPrintOnce(void);
 
 #endif /* TEST_TEST_PCAP01_H_ */
