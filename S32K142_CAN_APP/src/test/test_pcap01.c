@@ -20,26 +20,45 @@
 #include "uart_hal.h"
 #include "watchdog_hal.h"
 
+static void TEST_UART_Print_pF_x1000(uint32_t val_pF_x1000)
+{
+    uint32_t int_part  = val_pF_x1000 / 1000U;
+    uint32_t frac_part = val_pF_x1000 % 1000U;
+
+    UART_HAL_SendDec32(int_part);
+    UART_HAL_SendString(".");
+    if (frac_part < 100U) { UART_HAL_SendString("0"); }
+    if (frac_part < 10U)  { UART_HAL_SendString("0"); }
+    UART_HAL_SendDec32(frac_part);
+    UART_HAL_SendString("pF");
+}
+
 void TEST_PCAP01_Init(void)
 {
+    uint32_t baseline = ALGO_CapToLevel_GetBaseline();
+
     APP_PCAP01_Init();
     UART_HAL_SendString("PCAP01 Init done. State=");
     UART_HAL_SendString(APP_PCAP01_GetStateName(APP_PCAP01_GetState()));
+    UART_HAL_SendString("\r\n");
+
+    UART_HAL_SendString("Parasitic baseline=");
+    TEST_UART_Print_pF_x1000(baseline);
     UART_HAL_SendString("\r\n");
 }
 
 void TEST_PCAP01_PollAndPrintOnce(void)
 {
-    uint32_t cap_pF_x1000;
-    uint32_t cap_pF_int;
-    uint32_t cap_pF_frac;
+    uint32_t cap_raw_pF_x1000;
+    uint32_t cap_eff_pF_x1000;
+    uint32_t baseline;
     PCAP01_State_t state;
     uint8_t  convStatus;
     uint16_t volume_L;
     uint16_t height_mm;
 
     /* ---- 1. 电容采集 ---- */
-    state = APP_PCAP01_ReadCapacitance_pF_x1000(&cap_pF_x1000);
+    state = APP_PCAP01_ReadCapacitance_pF_x1000(&cap_raw_pF_x1000);
 
     if (state != PCAP01_STATE_DATA_VALID)
     {
@@ -49,23 +68,28 @@ void TEST_PCAP01_PollAndPrintOnce(void)
         return;
     }
 
-    cap_pF_int  = cap_pF_x1000 / 1000U;
-    cap_pF_frac = cap_pF_x1000 % 1000U;
+    baseline = ALGO_CapToLevel_GetBaseline();
+    if (cap_raw_pF_x1000 > baseline)
+    {
+        cap_eff_pF_x1000 = cap_raw_pF_x1000 - baseline;
+    }
+    else
+    {
+        cap_eff_pF_x1000 = 0U;
+    }
 
-    UART_HAL_SendString("C:");
-    UART_HAL_SendDec32(cap_pF_int);
-    UART_HAL_SendString(".");
-    if (cap_pF_frac < 100U) { UART_HAL_SendString("0"); }
-    if (cap_pF_frac < 10U)  { UART_HAL_SendString("0"); }
-    UART_HAL_SendDec32(cap_pF_frac);
-    UART_HAL_SendString("pF");
+    /* ---- 2. 串口打印 ---- */
+    UART_HAL_SendString("C_raw=");
+    TEST_UART_Print_pF_x1000(cap_raw_pF_x1000);
+    UART_HAL_SendString(" C_eff=");
+    TEST_UART_Print_pF_x1000(cap_eff_pF_x1000);
 
-    /* ---- 2. 电容 → 液位 ---- */
+    /* ---- 3. 电容 → 液位 ---- */
     if (APP_TankParam_IsConfigured())
     {
         const LngCylinderProfile_t *pProfile = APP_TankParam_GetProfile();
 
-        convStatus = ALGO_CapToLevel_Convert(pProfile, cap_pF_x1000, &volume_L, &height_mm);
+        convStatus = ALGO_CapToLevel_Convert(pProfile, cap_raw_pF_x1000, &volume_L, &height_mm);
 
         UART_HAL_SendString(" -> V:");
         UART_HAL_SendDec32(volume_L);
@@ -85,7 +109,7 @@ void TEST_PCAP01_PollAndPrintOnce(void)
 
     UART_HAL_SendString("\r\n");
 
-    /* ---- 3. 延时 ---- */
+    /* ---- 4. 延时 ---- */
     for (uint32_t i = 0U; i < 50U; i += 10U)
     {
         WATCHDOG_HAL_Fed();
