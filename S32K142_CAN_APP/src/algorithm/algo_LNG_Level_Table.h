@@ -1,5 +1,5 @@
 /*
- * app_LNG_Level_Table.h
+ * algo_LNG_Level_Table.h
  *
  *  Created on: 2026年6月30日
  *      Author: Eloise
@@ -10,8 +10,8 @@
  *              3. 编译环境：S32DS 3.4 + GCC 7.2.1
  */
 
-#ifndef APP_APP_LNG_LEVEL_TABLE_H_
-#define APP_APP_LNG_LEVEL_TABLE_H_
+#ifndef ALGORITHM_ALGO_LNG_LEVEL_TABLE_H_
+#define ALGORITHM_ALGO_LNG_LEVEL_TABLE_H_
 
 #include <stdint.h>
 
@@ -55,4 +55,5 @@ uint8_t Get_LngLevel_By_Profile(const LngCylinderProfile_t* pProfile,
                                 uint16_t* out_vol,
                                 uint16_t* out_height);
 
-#endif /* APP_APP_LNG_LEVEL_TABLE_H_ */
+
+#endif /* ALGORITHM_ALGO_LNG_LEVEL_TABLE_H_ */
