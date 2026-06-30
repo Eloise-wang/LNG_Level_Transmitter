@@ -4,7 +4,7 @@
  *  Created on: 2026年6月29日
  *      Author: Eloise
  *     Project: S32K142_CAN_APP
- *       Brief: PCAP01 测试文件 —— 调用 app 层采集电容，串口打印结果
+ *       Brief: PCAP01 测试文件 —— 调用 app 层采集电容，串口打印结果及状态
  *       Note : 1. 适配芯片：S32K142_64
  *              2. 编码格式：UTF-8
  *              3. 编译环境：S32DS 3.4 + GCC 7.2.1
@@ -21,7 +21,9 @@
 void TEST_PCAP01_Init(void)
 {
     APP_PCAP01_Init();
-    UART_HAL_SendString("PCAP01 Init done.\r\n");
+    UART_HAL_SendString("PCAP01 Init done. State=");
+    UART_HAL_SendString(APP_PCAP01_GetStateName(APP_PCAP01_GetState()));
+    UART_HAL_SendString("\r\n");
 }
 
 void TEST_PCAP01_PollAndPrintOnce(void)
@@ -30,9 +32,13 @@ void TEST_PCAP01_PollAndPrintOnce(void)
     uint32_t cap_pF_int;
     uint32_t cap_pF_frac;
 
-    if (!APP_PCAP01_ReadCapacitance_pF_x1000(&cap_pF_x1000))
+    PCAP01_State_t state = APP_PCAP01_ReadCapacitance_pF_x1000(&cap_pF_x1000);
+
+    if (state != PCAP01_STATE_DATA_VALID)
     {
-        UART_HAL_SendString("PCAP01 read failed\r\n");
+        UART_HAL_SendString("PCAP01 fail: ");
+        UART_HAL_SendString(APP_PCAP01_GetStateName(state));
+        UART_HAL_SendString("\r\n");
         return;
     }
 
